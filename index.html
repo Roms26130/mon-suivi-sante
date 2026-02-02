@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Health Tracker Pro v3.2</title>
+    <title>Health Tracker Pro v3.3</title>
     
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -22,12 +22,12 @@
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .drop-anim { transition: all 0.2s ease; }
         .drop-anim:active { transform: scale(0.9); }
-        /* Masquer la scrollbar sur mobile pour un look plus clean */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Animation d'apparition douce */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-card { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-100 text-slate-800">
 
     <div id="root"></div>
 
@@ -71,9 +71,7 @@
             Dumbbell: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7.9-7.9a2.121 2.121 0 0 1 3 3L6 12.9a2.121 2.121 0 0 1-3-3Z"/><path d="m12.9 6 7.9 7.9a2.121 2.121 0 0 1-3 3L10 9a2.121 2.121 0 0 1 2.9-3Z"/></svg>,
             Droplets: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.8-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>,
             Bed: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>,
-            LogOut: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
-            ChevronDown: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>,
-            ChevronUp: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            LogOut: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
         };
 
         const Card = ({ children, className = "" }) => (
@@ -81,23 +79,6 @@
                 {children}
             </div>
         );
-
-        const Badge = ({ children, color = "slate" }) => {
-            const colors = {
-                slate: "bg-slate-100 text-slate-700",
-                green: "bg-emerald-100 text-emerald-700",
-                red: "bg-rose-100 text-rose-700",
-                blue: "bg-blue-100 text-blue-700",
-                indigo: "bg-indigo-100 text-indigo-700",
-                amber: "bg-amber-100 text-amber-700",
-                cyan: "bg-cyan-100 text-cyan-700"
-            };
-            return (
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${colors[color] || colors.slate}`}>
-                    {children}
-                </span>
-            );
-        };
 
         // --- Données par défaut ---
         const DEFAULT_SUPPLEMENTS = [
@@ -117,7 +98,6 @@
         ];
         
         const ACTIVITY_TYPES = ['Marche', 'Course', 'Muscu', 'Vélo', 'Yoga', 'Natation', 'Autre'];
-
         const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
         const INITIAL_DAY_DATA = {
@@ -142,7 +122,8 @@
             };
         };
 
-        // --- Composant Authentification (Simplifié pour mobile) ---
+        // --- Composants ---
+
         const AuthScreen = ({ onLogin }) => {
             const [mode, setMode] = useState('login'); 
             const [username, setUsername] = useState('');
@@ -150,8 +131,7 @@
             const [error, setError] = useState('');
 
             useEffect(() => {
-                const storedAuth = safeStorage.getItem('sante_auth_config');
-                if (!storedAuth) setMode('setup');
+                if (!safeStorage.getItem('sante_auth_config')) setMode('setup');
             }, []);
 
             const handleAuth = (e) => {
@@ -181,9 +161,7 @@
                             <div className="bg-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 text-white shadow-lg shadow-indigo-500/30">
                                 <Icons.Lock size={24} />
                             </div>
-                            <h1 className="text-xl font-bold text-slate-800">
-                                {mode === 'setup' ? 'Créer Compte' : 'Connexion'}
-                            </h1>
+                            <h1 className="text-xl font-bold text-slate-800">{mode === 'setup' ? 'Créer Compte' : 'Connexion'}</h1>
                         </div>
                         <form onSubmit={handleAuth} className="space-y-4">
                             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="block w-full rounded-lg border-slate-300 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500 border p-3 text-sm" placeholder="Nom d'utilisateur" />
@@ -198,14 +176,102 @@
             );
         };
 
+        const DayCard = ({ day, data, configSupplements, configMetrics, onUpdate, onDeleteActivity }) => {
+            const suppsDone = configSupplements.filter(s => data.supplements?.[s.id]).length;
+            const suppsTotal = configSupplements.length;
+
+            return (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 animate-card flex flex-col h-full">
+                    {/* Header Carte */}
+                    <div className="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-xl">
+                        <h3 className="font-bold text-lg text-slate-800">{day}</h3>
+                        <div className="flex gap-1">
+                            {suppsDone === suppsTotal && suppsTotal > 0 && <span className="w-2 h-2 rounded-full bg-emerald-500" title="Traitements complets"></span>}
+                            {data.activities?.length > 0 && <span className="w-2 h-2 rounded-full bg-orange-500" title="Sport fait"></span>}
+                            {parseInt(data.hydration) >= 8 && <span className="w-2 h-2 rounded-full bg-blue-500" title="Hydratation OK"></span>}
+                        </div>
+                    </div>
+
+                    <div className="p-3 space-y-4 flex-1">
+                        {/* 1. Hygiène */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+                                <div className="text-[10px] font-bold text-blue-600 mb-1 flex items-center gap-1"><Icons.Droplets size={10}/> EAU ({data.hydration})</div>
+                                <div className="flex flex-wrap gap-1">
+                                    {[1,2,3,4,5,6,7,8].map(i => (
+                                        <button key={i} onClick={() => onUpdate('hydration', i === data.hydration ? i-1 : i)} className={`w-4 h-6 rounded-full border border-blue-200 transition-colors ${i <= data.hydration ? 'bg-blue-500 border-blue-600' : 'bg-white hover:bg-blue-50'}`}></button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="bg-indigo-50/50 p-2 rounded-lg border border-indigo-100">
+                                <div className="text-[10px] font-bold text-indigo-600 mb-1 flex items-center gap-1"><Icons.Bed size={10}/> SOMMEIL</div>
+                                <div className="flex gap-1">
+                                    <input type="number" placeholder="H" value={data.sleep?.hours} onChange={(e) => onUpdate('sleep', e.target.value, 'hours')} className="w-full text-xs p-1 border rounded text-center bg-white focus:ring-1 focus:ring-indigo-500 outline-none"/>
+                                    <select value={data.sleep?.quality} onChange={(e) => onUpdate('sleep', e.target.value, 'quality')} className="w-full text-xs p-1 border rounded bg-white focus:ring-1 focus:ring-indigo-500 outline-none">
+                                        <option value="">-</option><option value="1">1</option><option value="3">3</option><option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 2. Sport */}
+                        <div className="bg-orange-50/30 p-2 rounded-lg border border-orange-100">
+                            <div className="text-[10px] font-bold text-orange-600 mb-1 flex items-center gap-1"><Icons.Dumbbell size={10}/> SPORT</div>
+                            <div className="space-y-1 mb-2">
+                                {data.activities?.map(act => (
+                                    <div key={act.id} className="bg-white p-1.5 rounded border border-orange-100 text-[10px] flex justify-between items-center">
+                                        <span className="font-semibold truncate">{act.type} {act.duration}m</span>
+                                        <button onClick={() => onDeleteActivity(act.id)} className="text-red-400 hover:text-red-600"><Icons.Trash2 size={12}/></button>
+                                    </div>
+                                ))}
+                            </div>
+                            <form onSubmit={(e) => { e.preventDefault(); const t = e.target; if(t.ty.value && t.du.value) { onUpdate('addActivity', {type: t.ty.value, duration: t.du.value, calories: t.ca.value, intensity: 'Moy'}); t.reset(); }}} className="flex gap-1">
+                                <select name="ty" className="flex-1 text-[10px] rounded border p-1 bg-white">{ACTIVITY_TYPES.map(t=><option key={t} value={t}>{t.substring(0,8)}</option>)}</select>
+                                <input name="du" type="number" placeholder="Min" className="w-10 text-[10px] rounded border p-1 bg-white" required />
+                                <input name="ca" type="number" placeholder="Kcal" className="w-10 text-[10px] rounded border p-1 bg-white" />
+                                <button className="bg-orange-500 text-white rounded px-2"><Icons.Plus size={12}/></button>
+                            </form>
+                        </div>
+
+                        {/* 3. Traitements */}
+                        <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Traitements</div>
+                            <div className="grid grid-cols-2 gap-1.5">
+                                {configSupplements.map(supp => (
+                                    <label key={supp.id} className={`flex items-center gap-1.5 p-1.5 rounded border text-[10px] cursor-pointer transition-all select-none ${data.supplements?.[supp.id] ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                                        <input type="checkbox" checked={!!data.supplements?.[supp.id]} onChange={() => onUpdate('supplements', !data.supplements?.[supp.id], supp.id)} className="rounded text-indigo-600 focus:ring-0 w-3 h-3" />
+                                        <span className="truncate">{supp.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 4. Indicateurs & Notes */}
+                        <div className="space-y-2">
+                            <div className="grid grid-cols-4 gap-1">
+                                {configMetrics.map(m => (
+                                    <div key={m.id} className="text-center">
+                                        <div className="text-[9px] font-bold text-slate-400 uppercase truncate mb-0.5" title={m.label}>{m.label.substring(0,6)}</div>
+                                        <select value={data.metrics?.[m.id]||''} onChange={(e) => onUpdate('metrics', e.target.value, m.id)} className={`w-full p-0.5 text-xs text-center rounded border focus:ring-indigo-500 outline-none ${data.metrics?.[m.id] ? (parseInt(data.metrics[m.id])>=7?'bg-emerald-50 border-emerald-200 text-emerald-700 font-bold':'bg-amber-50 border-amber-200 text-amber-700') : 'bg-white border-slate-200'}`}>
+                                            <option value="">-</option>{[...Array(11).keys()].map(n=><option key={n} value={n}>{n}</option>)}
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+                            <textarea value={data.notes} onChange={(e) => onUpdate('notes', e.target.value)} placeholder="Notes..." className="w-full h-16 text-xs p-2 rounded border border-slate-200 bg-white focus:ring-1 focus:ring-indigo-500 resize-none" />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Application Principale ---
         function App() {
             const [isAuthenticated, setIsAuthenticated] = useState(false);
             const [currentUser, setCurrentUser] = useState('');
             const [activeTab, setActiveTab] = useState('tracker'); 
-            // State pour déplier/plier les jours sur mobile
-            const [expandedDay, setExpandedDay] = useState(DAYS[(new Date().getDay() + 6) % 7]); // Ouvre le jour actuel par défaut
 
+            // Etats
             const [configSupplements, setConfigSupplements] = useState(() => JSON.parse(safeStorage.getItem('sante_config_supplements_v3') || JSON.stringify(DEFAULT_SUPPLEMENTS)));
             const [configMetrics, setConfigMetrics] = useState(() => JSON.parse(safeStorage.getItem('sante_config_metrics_v3') || JSON.stringify(DEFAULT_METRICS)));
             const [weeksList, setWeeksList] = useState(() => {
@@ -240,28 +306,36 @@
             const currentWeekMeta = weeksList.find(w => w.id === activeWeekId) || weeksList[0];
             const currentIndex = weeksList.findIndex(w => w.id === activeWeekId);
 
-            const updateDayData = (day, field, value, subField = null) => {
+            // Generic Update Handler
+            const handleDayUpdate = (day, type, value, subId = null) => {
                 setAllWeeksData(prev => {
                     const week = prev[activeWeekId] ? { ...prev[activeWeekId] } : { days: {}, review: {} };
                     const dayData = week.days[day] ? { ...week.days[day] } : JSON.parse(JSON.stringify(INITIAL_DAY_DATA));
-                    if (subField) dayData[field] = { ...dayData[field], [subField]: value };
-                    else dayData[field] = value;
+                    
+                    if (type === 'supplements') dayData.supplements = { ...dayData.supplements, [subId]: value };
+                    else if (type === 'metrics') dayData.metrics = { ...dayData.metrics, [subId]: value };
+                    else if (type === 'sleep') dayData.sleep = { ...dayData.sleep, [subId]: value };
+                    else if (type === 'hydration') dayData.hydration = value;
+                    else if (type === 'notes') dayData.notes = value;
+                    else if (type === 'addActivity') {
+                        const newAct = { id: Date.now(), ...value };
+                        dayData.activities = [...(dayData.activities || []), newAct];
+                    }
+                    
                     week.days[day] = dayData;
                     return { ...prev, [activeWeekId]: week };
                 });
             };
 
-            const addActivity = (day, type, duration, calories, intensity) => {
-                const newAct = { id: Date.now(), type, duration, calories, intensity };
-                const currentActs = currentWeekData.days[day]?.activities || [];
-                updateDayData(day, 'activities', [...currentActs, newAct]);
+            const handleDeleteActivity = (day, actId) => {
+                setAllWeeksData(prev => {
+                    const week = { ...prev[activeWeekId] };
+                    const dayData = { ...week.days[day] };
+                    dayData.activities = dayData.activities.filter(a => a.id !== actId);
+                    week.days[day] = dayData;
+                    return { ...prev, [activeWeekId]: week };
+                });
             };
-            const removeActivity = (day, actId) => {
-                const currentActs = currentWeekData.days[day]?.activities || [];
-                updateDayData(day, 'activities', currentActs.filter(a => a.id !== actId));
-            };
-            const setHydration = (day, level) => updateDayData(day, 'hydration', level);
-            const updateSleep = (day, field, value) => updateDayData(day, 'sleep', value, field);
 
             const createNewWeek = () => {
                 const lastWeekId = weeksList[weeksList.length - 1].id;
@@ -291,13 +365,12 @@
                     prompt += `\n`;
                 });
                 navigator.clipboard.writeText(prompt);
-                alert("Copié !");
+                alert("Données copiées !");
             };
 
             const handleLogin = (user) => { setCurrentUser(user); setIsAuthenticated(true); };
             const handleLogout = () => { setIsAuthenticated(false); setCurrentUser(''); };
 
-            // Settings Actions
             const addSupplement = (name, dosage, time) => setConfigSupplements([...configSupplements, { id: Date.now().toString(), name, dosage, time }]);
             const removeSupplement = (id) => setConfigSupplements(configSupplements.filter(s => s.id !== id));
             const updateSupplementDosage = (id, newDosage) => setConfigSupplements(prev => prev.map(s => s.id === id ? { ...s, dosage: newDosage } : s));
@@ -307,8 +380,7 @@
             if (!isAuthenticated) return <AuthScreen onLogin={handleLogin} />;
 
             return (
-                <div className="min-h-screen bg-slate-50 pb-24 font-sans text-slate-800">
-                    {/* Header Mobile Compact */}
+                <div className="min-h-screen bg-slate-100 pb-24 font-sans text-slate-800">
                     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm safe-area-top">
                         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                             <div className="flex items-center gap-2">
@@ -338,9 +410,9 @@
                         )}
                     </header>
 
-                    <main className="max-w-3xl mx-auto p-3">
+                    <main className="max-w-[1400px] mx-auto p-4">
                         {activeTab === 'settings' && (
-                            <div className="space-y-4 animate-fade-in">
+                            <div className="max-w-2xl mx-auto space-y-4 animate-card">
                                 <Card className="p-4">
                                     <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Icons.BarChart size={18} className="text-indigo-600"/> Indicateurs</h3>
                                     <div className="space-y-2 mb-4">
@@ -356,14 +428,36 @@
                                         <button className="bg-slate-800 text-white p-2 rounded"><Icons.Plus size={18}/></button>
                                     </form>
                                 </Card>
+                                <Card className="p-4">
+                                    <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Icons.Settings size={18} className="text-indigo-600"/> Traitements</h3>
+                                    <div className="space-y-6">
+                                        {['matin', 'midi', 'soir'].map(time => (
+                                            <div key={time}>
+                                                <h4 className="font-bold text-xs uppercase text-slate-400 mb-2">{time}</h4>
+                                                <div className="space-y-2 mb-2">
+                                                    {configSupplements.filter(s => s.time === time).map(s => (
+                                                        <div key={s.id} className="flex justify-between items-center bg-slate-50 p-2 rounded border border-slate-100 text-sm">
+                                                            <div><span className="font-medium">{s.name}</span> <span className="text-xs text-slate-400">({s.dosage})</span></div>
+                                                            <button onClick={() => removeSupplement(s.id)} className="text-red-400"><Icons.Trash2 size={16}/></button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <form onSubmit={(e) => { e.preventDefault(); const t = e.target; if(t.n.value) { addSupplement(t.n.value, t.d.value, time); t.reset(); }}} className="flex gap-2">
+                                                    <input name="n" placeholder="Nom" className="flex-1 text-sm p-2 border rounded" required />
+                                                    <input name="d" placeholder="Dosage" className="w-20 text-sm p-2 border rounded" />
+                                                    <button className="bg-slate-800 text-white p-2 rounded"><Icons.Plus size={18}/></button>
+                                                </form>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Card>
                                 <button onClick={handleLogout} className="w-full py-3 text-red-500 font-bold text-sm bg-red-50 rounded-xl border border-red-100">Se Déconnecter</button>
                             </div>
                         )}
 
                         {activeTab === 'tracker' && (
-                            <div className="space-y-3">
-                                {/* Objectif Hebdo Mobile */}
-                                <div className="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                            <div className="space-y-4">
+                                <div className="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm max-w-2xl mx-auto">
                                     <label className="text-[10px] text-indigo-500 uppercase font-bold tracking-wider mb-1 block">Objectif Semaine</label>
                                     <input value={currentWeekMeta.objective} onChange={(e) => {
                                         const val = e.target.value;
@@ -371,231 +465,19 @@
                                     }} className="block w-full text-sm font-medium text-slate-700 bg-transparent outline-none" placeholder="Ex: 3 séances, Sommeil..." />
                                 </div>
 
-                                {/* TABLEAU DESKTOP (Cache sur mobile) */}
-                                <div className="hidden md:block">
-                                    <Card className="overflow-x-auto">
-                                        <table className="w-full text-sm text-left">
-                                            <thead className="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200">
-                                                <tr>
-                                                    <th className="px-4 py-3 min-w-[100px]">Jour</th>
-                                                    <th className="px-4 py-3 min-w-[200px] bg-blue-50/50">Hygiène de vie</th>
-                                                    <th className="px-4 py-3 min-w-[300px] bg-orange-50/50">Sport & Activité</th>
-                                                    <th className="px-4 py-3 min-w-[150px] bg-indigo-50/50">Traitements</th>
-                                                    <th className="px-4 py-3 min-w-[200px]">Indicateurs</th>
-                                                    <th className="px-4 py-3 min-w-[200px]">Notes</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {DAYS.map((day) => {
-                                                    const data = currentWeekData.days[day] || INITIAL_DAY_DATA;
-                                                    return (
-                                                        <tr key={day} className="hover:bg-slate-50/80 transition-colors">
-                                                            <td className="px-4 py-4 font-bold text-slate-700 align-top pt-6">{day}</td>
-                                                            
-                                                            <td className="px-4 py-4 align-top bg-blue-50/20 space-y-4">
-                                                                <div>
-                                                                    <div className="flex items-center gap-2 mb-1 text-xs font-bold text-blue-600 uppercase">
-                                                                        <Icons.Droplets size={12}/> Hydratation
-                                                                    </div>
-                                                                    <div className="flex gap-1 flex-wrap">
-                                                                        {[1,2,3,4,5,6,7,8].map(i => (
-                                                                            <button 
-                                                                                key={i} 
-                                                                                onClick={() => setHydration(day, i === data.hydration ? i-1 : i)}
-                                                                                className={`w-6 h-8 rounded-full border border-blue-200 flex items-end justify-center overflow-hidden drop-anim ${i <= data.hydration ? 'bg-blue-400' : 'bg-white'}`}
-                                                                            >
-                                                                                <div className={`w-full ${i <= data.hydration ? 'h-full' : 'h-0'} bg-blue-500 transition-all`}></div>
-                                                                            </button>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="border-t border-blue-100 pt-2">
-                                                                    <div className="flex items-center gap-2 mb-1 text-xs font-bold text-indigo-600 uppercase">
-                                                                        <Icons.Bed size={12}/> Sommeil
-                                                                    </div>
-                                                                    <div className="flex gap-2">
-                                                                        <div className="flex-1">
-                                                                            <input type="number" placeholder="H" value={data.sleep?.hours} onChange={(e) => updateSleep(day, 'hours', e.target.value)} className="w-full text-xs p-1 border rounded text-center"/>
-                                                                        </div>
-                                                                        <div className="flex-1">
-                                                                            <select value={data.sleep?.quality} onChange={(e) => updateSleep(day, 'quality', e.target.value)} className="w-full text-xs p-1 border rounded">
-                                                                                <option value="">Qualité</option>
-                                                                                <option value="1">1/5 😫</option>
-                                                                                <option value="2">2/5 🥱</option>
-                                                                                <option value="3">3/5 😐</option>
-                                                                                <option value="4">4/5 🙂</option>
-                                                                                <option value="5">5/5 🤩</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-
-                                                            <td className="px-4 py-4 align-top bg-orange-50/20">
-                                                                <div className="space-y-2">
-                                                                    {data.activities && data.activities.map(act => (
-                                                                        <div key={act.id} className="bg-white p-2 rounded border border-orange-200 text-xs shadow-sm flex justify-between items-center group">
-                                                                            <div>
-                                                                                <span className="font-bold text-slate-700">{act.type}</span>
-                                                                                <div className="text-slate-500">{act.duration} min • {act.calories} kcal • {act.intensity}</div>
-                                                                            </div>
-                                                                            <button onClick={() => removeActivity(day, act.id)} className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100"><Icons.Trash2 size={14}/></button>
-                                                                        </div>
-                                                                    ))}
-                                                                    <form onSubmit={(e) => { e.preventDefault(); const form = e.target; const type = form.type.value; const dur = form.duration.value; const cal = form.cal.value; const int = form.int.value; if(type && dur) { addActivity(day, type, dur, cal, int); form.reset(); }}} className="bg-orange-50/50 p-2 rounded border border-orange-100 mt-2">
-                                                                        <div className="grid grid-cols-2 gap-2 mb-2">
-                                                                            <select name="type" className="text-xs p-1 rounded border border-orange-200">{ACTIVITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select>
-                                                                            <input name="duration" type="number" placeholder="Min" className="text-xs p-1 rounded border border-orange-200" required />
-                                                                            <input name="cal" type="number" placeholder="Kcal" className="text-xs p-1 rounded border border-orange-200" />
-                                                                            <select name="int" className="text-xs p-1 rounded border border-orange-200"><option value="Moyenne">Moyenne</option><option value="Faible">Faible</option><option value="Haute">Haute</option></select>
-                                                                        </div>
-                                                                        <button type="submit" className="w-full bg-orange-500 text-white text-xs py-1 rounded font-bold hover:bg-orange-600 flex justify-center items-center gap-1"><Icons.Plus size={12}/> Ajouter Séance</button>
-                                                                    </form>
-                                                                </div>
-                                                            </td>
-
-                                                            <td className="px-4 py-4 align-top bg-indigo-50/20">
-                                                                <div className="space-y-1">
-                                                                    {configSupplements.map(supp => (
-                                                                         <label key={supp.id} className="flex items-center gap-2 cursor-pointer select-none">
-                                                                            <input type="checkbox" checked={!!data.supplements?.[supp.id]} onChange={() => { const currentVal = currentWeekData.days[day]?.supplements?.[supp.id]; updateDayData(day, 'supplements', !currentVal, supp.id); }} className="w-3 h-3 rounded text-indigo-600 focus:ring-indigo-500" />
-                                                                            <span className={`text-[10px] ${data.supplements?.[supp.id] ? 'text-indigo-900 font-bold' : 'text-slate-400'}`}>{supp.name}</span>
-                                                                        </label>
-                                                                    ))}
-                                                                </div>
-                                                            </td>
-
-                                                            <td className="px-4 py-4 border-l border-slate-100 align-top">
-                                                                <div className="space-y-2">
-                                                                    {configMetrics.map(metric => (
-                                                                        <div key={metric.id} className="flex items-center justify-between gap-2">
-                                                                            <label className="text-[10px] uppercase text-slate-500 font-bold">{metric.label}</label>
-                                                                            <select value={data.metrics?.[metric.id] || ''} onChange={(e) => { const val = e.target.value; updateDayData(day, 'metrics', val, metric.id); }} className="w-12 text-xs p-0.5 rounded border border-slate-200 text-center">
-                                                                                <option value="">-</option>
-                                                                                {[...Array(11).keys()].map(n => <option key={n} value={n}>{n}</option>)}
-                                                                            </select>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </td>
-
-                                                            <td className="px-4 py-4 align-top">
-                                                                <textarea value={data.notes} onChange={(e) => updateDayData(day, 'notes', e.target.value)} placeholder="..." className="w-full h-24 text-xs p-2 rounded bg-slate-50 border border-slate-200 resize-none"/>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </Card>
-                                </div>
-
-                                {/* LISTE CARTES MOBILE (Visible sur mobile) */}
-                                <div className="md:hidden space-y-3">
-                                    {DAYS.map((day) => {
-                                        const data = currentWeekData.days[day] || INITIAL_DAY_DATA;
-                                        const isExpanded = expandedDay === day;
-                                        
-                                        // Calcul rapide pour résumé visuel
-                                        const suppsDone = configSupplements.filter(s => data.supplements?.[s.id]).length;
-                                        const suppsTotal = configSupplements.length;
-                                        const scoreHydra = data.hydration;
-
-                                        return (
-                                            <div key={day} className={`bg-white rounded-xl shadow-sm border transition-all ${isExpanded ? 'border-indigo-300 ring-1 ring-indigo-100' : 'border-slate-200'}`}>
-                                                {/* En-tête Jour (Cliquable) */}
-                                                <div onClick={() => setExpandedDay(isExpanded ? null : day)} className="p-3 flex items-center justify-between cursor-pointer active:bg-slate-50">
-                                                    <div className="flex items-center gap-3">
-                                                        <h3 className={`font-bold text-lg ${isExpanded ? 'text-indigo-700' : 'text-slate-700'}`}>{day}</h3>
-                                                        {!isExpanded && (
-                                                            <div className="flex gap-1">
-                                                                {suppsDone === suppsTotal && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
-                                                                {data.activities?.length > 0 && <span className="w-2 h-2 rounded-full bg-orange-500"></span>}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="text-slate-400">
-                                                        {isExpanded ? <Icons.ChevronUp size={20}/> : <Icons.ChevronDown size={20}/>}
-                                                    </div>
-                                                </div>
-
-                                                {/* Contenu Dépliable */}
-                                                {isExpanded && (
-                                                    <div className="p-3 pt-0 space-y-4 border-t border-slate-100 mt-1">
-                                                        
-                                                        {/* 1. Hygiène (Eau / Dodo) */}
-                                                        <div className="grid grid-cols-2 gap-3 pt-3">
-                                                            <div className="bg-blue-50/50 p-2 rounded-lg border border-blue-100">
-                                                                <div className="text-xs font-bold text-blue-600 mb-2 flex items-center gap-1"><Icons.Droplets size={12}/> EAU ({data.hydration})</div>
-                                                                <div className="flex flex-wrap gap-1">
-                                                                    {[1,2,3,4,5,6,7,8].map(i => (
-                                                                        <button key={i} onClick={() => setHydration(day, i === data.hydration ? i-1 : i)} className={`w-5 h-7 rounded-full border border-blue-200 ${i <= data.hydration ? 'bg-blue-500' : 'bg-white'}`}></button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                            <div className="bg-indigo-50/50 p-2 rounded-lg border border-indigo-100">
-                                                                <div className="text-xs font-bold text-indigo-600 mb-2 flex items-center gap-1"><Icons.Bed size={12}/> SOMMEIL</div>
-                                                                <div className="flex gap-1">
-                                                                    <input type="number" placeholder="H" value={data.sleep?.hours} onChange={(e) => updateSleep(day, 'hours', e.target.value)} className="w-full text-sm p-1 border rounded text-center bg-white"/>
-                                                                    <select value={data.sleep?.quality} onChange={(e) => updateSleep(day, 'quality', e.target.value)} className="w-full text-sm p-1 border rounded bg-white">
-                                                                        <option value="">-</option><option value="1">1</option><option value="3">3</option><option value="5">5</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* 2. Sport */}
-                                                        <div className="bg-orange-50/30 p-3 rounded-lg border border-orange-100">
-                                                            <div className="text-xs font-bold text-orange-600 mb-2 flex items-center gap-1"><Icons.Dumbbell size={14}/> ACTIVITÉ</div>
-                                                            <div className="space-y-2 mb-2">
-                                                                {data.activities?.map(act => (
-                                                                    <div key={act.id} className="bg-white p-2 rounded border border-orange-100 text-xs flex justify-between">
-                                                                        <span className="font-semibold">{act.type} {act.duration}m</span>
-                                                                        <button onClick={() => removeActivity(day, act.id)} className="text-red-400"><Icons.Trash2 size={14}/></button>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                            <form onSubmit={(e) => { e.preventDefault(); const t = e.target; if(t.ty.value && t.du.value) { addActivity(day, t.ty.value, t.du.value, t.ca.value, 'Moy'); t.reset(); }}} className="flex gap-2">
-                                                                <select name="ty" className="w-20 text-xs rounded border p-1 bg-white">{ACTIVITY_TYPES.map(t=><option key={t} value={t}>{t.substring(0,6)}</option>)}</select>
-                                                                <input name="du" type="number" placeholder="Min" className="w-12 text-xs rounded border p-1 bg-white" required />
-                                                                <input name="ca" type="number" placeholder="Kcal" className="w-12 text-xs rounded border p-1 bg-white" />
-                                                                <button className="bg-orange-500 text-white rounded px-3 py-1"><Icons.Plus size={14}/></button>
-                                                            </form>
-                                                        </div>
-
-                                                        {/* 3. Traitements */}
-                                                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                                            <div className="text-xs font-bold text-slate-500 mb-2">TRAITEMENTS</div>
-                                                            <div className="grid grid-cols-2 gap-2">
-                                                                {configSupplements.map(supp => (
-                                                                    <label key={supp.id} className={`flex items-center gap-2 p-2 rounded border text-xs transition-all ${data.supplements?.[supp.id] ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-slate-200 text-slate-500'}`}>
-                                                                        <input type="checkbox" checked={!!data.supplements?.[supp.id]} onChange={() => toggleSupplement(day, supp.id)} className="rounded text-indigo-600 focus:ring-0 w-4 h-4" />
-                                                                        <span className="truncate font-medium">{supp.name}</span>
-                                                                    </label>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* 4. Indicateurs & Notes */}
-                                                        <div className="space-y-3">
-                                                            <div className="grid grid-cols-4 gap-2">
-                                                                {configMetrics.map(m => (
-                                                                    <div key={m.id} className="text-center">
-                                                                        <div className="text-[10px] font-bold text-slate-400 uppercase truncate mb-1">{m.label}</div>
-                                                                        <select value={data.metrics?.[m.id]||''} onChange={(e) => updateMetric(day, m.id, e.target.value)} className={`w-full p-1 text-sm text-center rounded border ${data.metrics?.[m.id] ? (parseInt(data.metrics[m.id])>=7?'bg-emerald-50 border-emerald-200 text-emerald-700':'bg-amber-50 border-amber-200 text-amber-700') : 'bg-white border-slate-200'}`}>
-                                                                            <option value="">-</option>{[...Array(11).keys()].map(n=><option key={n} value={n}>{n}</option>)}
-                                                                        </select>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                            <textarea value={data.notes} onChange={(e) => updateDayData(day, 'notes', e.target.value)} placeholder="Notes, symptômes, repas..." className="w-full h-20 text-sm p-3 rounded-lg border border-slate-200 bg-white focus:ring-1 focus:ring-indigo-500" />
-                                                        </div>
-
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                {/* GRILLE RESPONSIVE : 1 col mobile, 2 col tablette, 3 col desktop, 4 col large */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {DAYS.map((day) => (
+                                        <DayCard 
+                                            key={day} 
+                                            day={day} 
+                                            data={currentWeekData.days[day] || INITIAL_DAY_DATA}
+                                            configSupplements={configSupplements}
+                                            configMetrics={configMetrics}
+                                            onUpdate={(type, val, sub) => handleDayUpdate(day, type, val, sub)}
+                                            onDeleteActivity={(id) => handleDeleteActivity(day, id)}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         )}
